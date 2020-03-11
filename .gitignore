@@ -1,0 +1,13 @@
+node_modules
+coverage
+.DS_Store
+*.log
+.vscode
+.idea
+dist
+.cache
+build
+.env
+todos.md
+yarn.lock
+yarn-error.log
