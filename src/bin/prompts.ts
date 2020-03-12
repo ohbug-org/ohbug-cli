@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import prompts, { PromptObject } from 'prompts'
 import { resolve } from 'path'
 import { accessSync } from 'fs'
@@ -5,6 +6,10 @@ import { DEFAULT_URL } from '../lib/constants'
 import { _import } from '../lib/utils'
 
 async function _prompts() {
+  console.log(
+    chalk.bold.green(`Ohbug CLI v${require('../../package.json').version}`)
+  )
+
   const { command } = await prompts({
     type: `select`,
     name: `command`,

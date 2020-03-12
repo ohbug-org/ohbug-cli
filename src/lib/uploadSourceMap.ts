@@ -3,7 +3,7 @@ import { resolve } from 'path'
 import { promisify } from 'util'
 import glob from 'glob'
 import request from './request'
-import { DEFAULT_URL } from './constants'
+import { DEFAULT_URL, LOG_PREFIX } from './constants'
 
 const stat = promisify(fs.stat)
 
@@ -58,16 +58,20 @@ async function uploadSourceMap({
   } else if (stats.isDirectory()) {
     // Find all map files in the specified directory and upload them one by one.
     const list = glob.sync(resolve(path, `./**/*.{js.map,}`))
-    for (const file of list) {
-      await request({
-        url,
-        file,
-        data: {
-          apiKey,
-          appVersion,
-          appType
-        }
-      })
+    if (list.length) {
+      for (const file of list) {
+        await request({
+          url,
+          file,
+          data: {
+            apiKey,
+            appVersion,
+            appType
+          }
+        })
+      }
+    } else {
+      throw new Error(`${LOG_PREFIX} No matching source map files!`)
     }
   }
 }

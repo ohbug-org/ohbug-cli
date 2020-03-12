@@ -10,7 +10,7 @@ function _program() {
   program
     .command(`uploadSourceMap <path>`)
     .description(
-      `Upload the source map file to the server, you can upload the file by passing in the file path, and automatically upload the map file in the folder if you pass in the folder path`
+      `Upload the source map file to the server, you can upload the file by passing in the file path. Or enter the folder path, the source map files in the folder will be uploaded automatically.`
     )
     .requiredOption(`-k, --api-key <key>`, `Your project API key`)
     .requiredOption(
@@ -33,6 +33,8 @@ function _program() {
     console.log(`  ` + chalk.red(`Unknown command ${chalk.yellow(cmd)}.`))
     console.log()
   })
+
+  program.version(require('../../package.json').version)
 
   program.parse(process.argv)
 }

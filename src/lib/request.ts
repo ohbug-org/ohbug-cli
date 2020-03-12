@@ -37,23 +37,45 @@ const request = ({ url, file, data }: Request) => {
 
   const parsedUrl = parseUrl(url)
 
-  const request = http.request({
-    method: 'POST',
-    hostname: parsedUrl.hostname,
-    path: parsedUrl.path || '/',
-    port: parsedUrl.port,
-    headers: formData.getHeaders(),
-    timeout: TIMEOUT
-  })
+  const request = http.request(
+    {
+      method: 'POST',
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.path || '/',
+      port: parsedUrl.port,
+      headers: formData.getHeaders(),
+      timeout: TIMEOUT
+    },
+    res => {
+      if (res.statusCode) {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          return handleSuccess()
+        } else {
+          const err = new Error(
+            `${LOG_PREFIX} HTTP status ${
+              res.statusCode
+            } received from uploadSourceMap API`
+          )
+          return handleError(err)
+        }
+      }
+
+      throw new Error(`${LOG_PREFIX} Invalid payload sent to upload API`)
+    }
+  )
 
   formData.pipe(request)
 
-  request.on('error', error => {
+  request.on('error', handleError)
+
+  function handleSuccess() {
+    spinner.succeed()
+  }
+  function handleError(error: Error) {
     spinner.fail()
     console.error(error)
-  })
-
-  spinner.succeed()
+    process.exit(1)
+  }
 }
 
 export default request
