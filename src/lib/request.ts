@@ -32,7 +32,7 @@ const request = ({ url, file, data }: Request) => {
   const formData = new FormData()
   formData.append('file', createReadStream(file))
   Object.keys(data).forEach(key => {
-    formData.append(key, data[key])
+    if (data[key]) formData.append(key, data[key])
   })
 
   const parsedUrl = parseUrl(url)
