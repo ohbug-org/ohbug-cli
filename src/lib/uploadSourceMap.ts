@@ -46,29 +46,42 @@ async function uploadSourceMap({
   if (stats.isFile()) {
     // Single file
     const file = resolve(path)
-    await request({
-      url,
-      file,
-      data: {
-        apiKey,
-        appVersion,
-        appType
-      }
-    })
+    try {
+      return await request({
+        url,
+        file,
+        data: {
+          apiKey,
+          appVersion,
+          appType
+        }
+      })
+    } catch (error) {
+      throw new Error(`${LOG_PREFIX} Uploading file ${file} failed!\n${error}`)
+    }
   } else if (stats.isDirectory()) {
     // Find all map files in the specified directory and upload them one by one.
     const list = glob.sync(resolve(path, `./**/*.{js.map,}`))
     if (list.length) {
-      for (const file of list) {
-        await request({
-          url,
-          file,
-          data: {
-            apiKey,
-            appVersion,
-            appType
-          }
-        })
+      try {
+        return await Promise.all(
+          list.map(file =>
+            request({
+              url,
+              file,
+              data: {
+                apiKey,
+                appVersion,
+                appType
+              }
+            })
+          )
+        )
+      } catch (error) {
+        throw new Error(`${LOG_PREFIX} Uploading file ${list.join(
+          ','
+        )} failed!\n${error}
+      `)
       }
     } else {
       throw new Error(`${LOG_PREFIX} No matching source map files!`)

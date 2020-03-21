@@ -1,4 +1,4 @@
-import http from 'http'
+import http, { IncomingMessage } from 'http'
 import { PathLike, createReadStream } from 'fs'
 import { parse as parseUrl } from 'url'
 import FormData from 'form-data'
@@ -21,61 +21,63 @@ export interface Request {
   data?: any
 }
 
-const request = ({ url, file, data }: Request) => {
-  if (!url) throw new Error(`${LOG_PREFIX} No url matches!`)
-  if (!file) throw new Error(`${LOG_PREFIX} No ".map" file matches!`)
+const request = ({ url, file, data }: Request): Promise<IncomingMessage> =>
+  new Promise((resolve, reject) => {
+    if (!url) return reject(new Error(`${LOG_PREFIX} No url matches!`))
+    if (!file) return reject(new Error(`${LOG_PREFIX} No ".map" file matches!`))
 
-  const spinner = ora(
-    `${chalk.cyan('Upload:')} ${chalk.underline(file)}`
-  ).start()
+    const spinner = ora(
+      `${chalk.cyan('Upload:')} ${chalk.underline(file)}`
+    ).start()
 
-  const formData = new FormData()
-  formData.append('file', createReadStream(file))
-  Object.keys(data).forEach(key => {
-    if (data[key]) formData.append(key, data[key])
-  })
+    const formData = new FormData()
+    formData.append('file', createReadStream(file))
+    data &&
+      Object.keys(data).forEach(key => {
+        if (data[key]) formData.append(key, data[key])
+      })
 
-  const parsedUrl = parseUrl(url)
+    const parsedUrl = parseUrl(url)
 
-  const request = http.request(
-    {
-      method: 'POST',
-      hostname: parsedUrl.hostname,
-      path: parsedUrl.path || '/',
-      port: parsedUrl.port,
-      headers: formData.getHeaders(),
-      timeout: TIMEOUT
-    },
-    res => {
-      if (res.statusCode) {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          return handleSuccess()
-        } else {
-          const err = new Error(
-            `${LOG_PREFIX} HTTP status ${
-              res.statusCode
-            } received from uploadSourceMap API`
-          )
-          return handleError(err)
+    const _request = http.request(
+      {
+        method: 'POST',
+        hostname: parsedUrl.hostname,
+        path: parsedUrl.path || '/',
+        port: parsedUrl.port,
+        headers: formData.getHeaders(),
+        timeout: TIMEOUT
+      },
+      res => {
+        if (res.statusCode) {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            return handleSuccess(res)
+          } else {
+            const err = new Error(
+              `${LOG_PREFIX} HTTP status ${
+                res.statusCode
+              } received from uploadSourceMap API`
+            )
+            return handleError(err)
+          }
         }
+
+        throw new Error(`${LOG_PREFIX} Invalid payload sent to upload API`)
       }
+    )
 
-      throw new Error(`${LOG_PREFIX} Invalid payload sent to upload API`)
+    formData.pipe(_request)
+
+    _request.on('error', handleError)
+
+    function handleSuccess(res: IncomingMessage) {
+      spinner.succeed()
+      resolve(res)
     }
-  )
-
-  formData.pipe(request)
-
-  request.on('error', handleError)
-
-  function handleSuccess() {
-    spinner.succeed()
-  }
-  function handleError(error: Error) {
-    spinner.fail()
-    console.error(error)
-    process.exit(1)
-  }
-}
+    function handleError(error: Error) {
+      spinner.fail()
+      reject(error)
+    }
+  })
 
 export default request
