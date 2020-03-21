@@ -1,6 +1,9 @@
-# ohbug-cli
-
-A Node.js module to programmatically upload your sourceMap files to Ohbug or other service.
+<div align="center">
+  <h1>ohbug-cli</h1>
+  <p>A Node.js module to programmatically upload your sourceMap files to Ohbug or other service.</p>
+  
+  [![codecov](https://img.shields.io/codecov/c/github/ohbug-org/ohbug-cli.svg?style=flat-square)](https://codecov.io/gh/ohbug-org/ohbug-cli)
+</div>
 
 English | [简体中文](./README-zh_CN.md)
 

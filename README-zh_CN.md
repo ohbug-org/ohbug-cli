@@ -1,6 +1,9 @@
-# ohbug-cli
-
-一键上传您的 sourceMap 文件到 Ohbug 或其他服务。 
+<div align="center">
+  <h1>ohbug-cli</h1>
+  <p>一键上传您的 sourceMap 文件到 Ohbug 或其他服务。 </p>
+  
+  [![codecov](https://img.shields.io/codecov/c/github/ohbug-org/ohbug-cli.svg?style=flat-square)](https://codecov.io/gh/ohbug-org/ohbug-cli)
+</div>
 
 [English](./README.md) | 简体中文
 
