@@ -36,7 +36,8 @@
   "scripts": {
     "build": "tsc & tsc --module es6 --outDir ./dist/esm",
     "dev": "tsc -w",
-    "test": "jest --config ./jest.config.js"
+    "test": "jest --config ./jest.config.js",
+    "codecov": "codecov"
   },
   "dependencies": {
     "chalk": "^3.0.0",
@@ -54,6 +55,7 @@
     "@types/node": "^13.9.0",
     "@types/prompts": "^2.0.5",
     "@types/rimraf": "^2.0.3",
+    "codecov": "^3.6.5",
     "cz-conventional-changelog": "3.1.0",
     "express": "^4.17.1",
     "jest": "^25.1.0",
