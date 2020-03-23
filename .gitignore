@@ -9,6 +9,5 @@ dist
 build
 .env
 todos.md
-yarn.lock
 yarn-error.log
 uploads

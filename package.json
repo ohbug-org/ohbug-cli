@@ -1,7 +1,7 @@
 {
   "name": "@ohbug/cli",
   "version": "0.0.3",
-  "description": "> TODO: description",
+  "description": "Command line utility to work with Ohbug",
   "keywords": [
     "ohbug",
     "source-map",
