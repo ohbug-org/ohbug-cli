@@ -61,6 +61,6 @@ Options:
   -k, --api-key <key>          Your project API key [required]
   -v, --app-version <version>  The version number of your app [required]
   -t, --app-type <type>        The type of your app [optional]
-  -u, --url <url>              The url of the upload server [optional] (default: "http://api.ohbug.io/v1/sourceMap/upload")
+  -u, --url <url>              The url of the upload server [optional] (default: "http://ohbug.io/api/v1/sourceMap/upload")
   -h, --help                   output usage information
 ```
