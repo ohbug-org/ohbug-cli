@@ -61,6 +61,6 @@ Options:
   -k, --api-key <key>          您的项目 API key [必选]
   -v, --app-version <version>  您的应用的版本号 [必选]
   -t, --app-type <type>        您的应用类型 [可选的]
-  -u, --url <url>              上传服务器的 URL [可选的] (默认为: "http://ohbug.io/api/v1/sourceMap/upload")
+  -u, --url <url>              上传服务器的 URL [可选的] (默认为: "http://api.ohbug.net/sourceMap/upload")
   -h, --help                   输出帮助信息
 ```

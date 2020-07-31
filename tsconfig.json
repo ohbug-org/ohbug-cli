@@ -17,9 +17,9 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "removeComments": true,
+    "allowSyntheticDefaultImports": true,
     "lib": ["esnext"],
     "types": ["node", "jest"]
   },
-  "include": ["src"],
-  "exclude": ["**/__tests__"]
+  "include": ["src"]
 }
