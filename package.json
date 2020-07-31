@@ -1,6 +1,6 @@
 {
   "name": "@ohbug/cli",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Command line utility to work with Ohbug",
   "keywords": [
     "ohbug",
@@ -34,6 +34,7 @@
     "access": "public"
   },
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "tsc & tsc --module es6 --outDir ./dist/esm",
     "dev": "tsc -w",
     "test": "jest --config ./jest.config.js",
