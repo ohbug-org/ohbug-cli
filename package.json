@@ -51,6 +51,7 @@
   "devDependencies": {
     "@chenyueban/lint": "^1.1.0",
     "@chenyueban/tsconfig": "^0.2.0",
+    "@release-it/conventional-changelog": "^3.3.0",
     "@types/express": "^4.17.13",
     "@types/glob": "^7.1.4",
     "@types/jest": "^27.0.1",
