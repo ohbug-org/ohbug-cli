@@ -31,16 +31,14 @@ export interface UploadSourceMapOptions {
    */
   url?: string
 }
-export interface UploadSourceMap
-  extends UploadSourceMapCommand,
-    UploadSourceMapOptions {}
+export interface UploadSourceMap extends UploadSourceMapCommand, UploadSourceMapOptions {}
 
 async function uploadSourceMap({
   path,
   apiKey,
   appVersion,
   appType,
-  url = DEFAULT_URL
+  url = DEFAULT_URL,
 }: UploadSourceMap) {
   const stats = await stat(path)
   if (stats.isFile()) {
@@ -53,8 +51,8 @@ async function uploadSourceMap({
         data: {
           apiKey,
           appVersion,
-          appType
-        }
+          appType,
+        },
       })
     } catch (error) {
       throw new Error(`${LOG_PREFIX} Uploading file ${file} failed!\n${error}`)
@@ -65,28 +63,27 @@ async function uploadSourceMap({
     if (list.length) {
       try {
         return await Promise.all(
-          list.map(file =>
+          list.map((file) =>
             request({
               url,
               file,
               data: {
                 apiKey,
                 appVersion,
-                appType
-              }
+                appType,
+              },
             })
           )
         )
       } catch (error) {
-        throw new Error(`${LOG_PREFIX} Uploading file ${list.join(
-          ','
-        )} failed!\n${error}
+        throw new Error(`${LOG_PREFIX} Uploading file ${list.join(',')} failed!\n${error}
       `)
       }
     } else {
       throw new Error(`${LOG_PREFIX} No matching source map files!`)
     }
   }
+  return null
 }
 
 export default uploadSourceMap

@@ -1,46 +1,45 @@
-import { resolve } from "path";
-import { Server } from "http";
-import express from "express";
-import type { Express } from "express";
-import multer from "multer";
-import rimraf from "rimraf";
-const upload = multer({ dest: resolve(__dirname, "./uploads/") });
+import path from 'path'
+import { Server } from 'http'
+import express from 'express'
+import type { Express } from 'express'
+import multer from 'multer'
+import rimraf from 'rimraf'
 
-export const uploads = resolve(__dirname, "./uploads");
-const port = 10086;
-export const url = `http://localhost:${port}/upload`;
+const upload = multer({ dest: path.resolve(__dirname, './uploads/') })
 
-let server: Server | null, app: Express | null;
+export const uploads = path.resolve(__dirname, './uploads')
+const port = 10086
+export const url = `http://localhost:${port}/upload`
+
+let server: Server | null
+let app: Express | null
 export const createTestServer = (): Promise<void> =>
   new Promise((resolve, reject) => {
-    app = express();
+    app = express()
 
-    app.post("/upload", upload.single("file"), (_: any, res: any) => {
-      res.end("good");
-    });
+    // @ts-ignore
+    app.post('/upload', upload.single('file'), (_, res) => {
+      res.end('good')
+    })
 
-    const args = [
+    const server2 = app.listen.apply(app, [
       port,
+      // @ts-ignore
       (err: Error) => {
-        if (err) return reject(err);
-        server = _server;
-        resolve();
+        if (err) return reject(err)
+        server = server2
+        resolve()
       },
-    ];
-
-    const _server = app.listen.apply(app, args);
-  });
+    ])
+  })
 
 export const closeTestServer = () =>
   new Promise((resolve) => {
-    server &&
-      server.close(() => {
-        resolve();
-      });
-    server = null;
-    app = null;
-  });
+    server?.close(resolve)
+    server = null
+    app = null
+  })
 
 export const clearUploads = () => {
-  rimraf(`${uploads}/*`, () => {});
-};
+  rimraf(`${uploads}/*`, () => {})
+}

@@ -26,49 +26,17 @@ const request = ({ url, file, data }: Request): Promise<IncomingMessage> =>
     if (!url) return reject(new Error(`${LOG_PREFIX} No url matches!`))
     if (!file) return reject(new Error(`${LOG_PREFIX} No ".map" file matches!`))
 
-    const spinner = ora(
-      `${chalk.cyan('Upload:')} ${chalk.underline(file)}`
-    ).start()
+    const spinner = ora(`${chalk.cyan('Upload:')} ${chalk.underline(file)}`).start()
 
     const formData = new FormData()
     formData.append('file', createReadStream(file))
-    data &&
-      Object.keys(data).forEach(key => {
+    if (data) {
+      Object.keys(data).forEach((key) => {
         if (data[key]) formData.append(key, data[key])
       })
+    }
 
     const parsedUrl = parseUrl(url)
-
-    const _request = http.request(
-      {
-        method: 'POST',
-        hostname: parsedUrl.hostname,
-        path: parsedUrl.path || '/',
-        port: parsedUrl.port,
-        headers: formData.getHeaders(),
-        timeout: TIMEOUT
-      },
-      res => {
-        if (res.statusCode) {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            return handleSuccess(res)
-          } else {
-            const err = new Error(
-              `${LOG_PREFIX} HTTP status ${
-                res.statusCode
-              } received from uploadSourceMap API`
-            )
-            return handleError(err)
-          }
-        }
-
-        throw new Error(`${LOG_PREFIX} Invalid payload sent to upload API`)
-      }
-    )
-
-    formData.pipe(_request)
-
-    _request.on('error', handleError)
 
     function handleSuccess(res: IncomingMessage) {
       spinner.succeed()
@@ -78,6 +46,34 @@ const request = ({ url, file, data }: Request): Promise<IncomingMessage> =>
       spinner.fail()
       reject(error)
     }
+
+    const task = http.request(
+      {
+        method: 'POST',
+        hostname: parsedUrl.hostname,
+        path: parsedUrl.path || '/',
+        port: parsedUrl.port,
+        headers: formData.getHeaders(),
+        timeout: TIMEOUT,
+      },
+      (res) => {
+        if (res.statusCode) {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            return handleSuccess(res)
+          }
+          const err = new Error(
+            `${LOG_PREFIX} HTTP status ${res.statusCode} received from uploadSourceMap API`
+          )
+          return handleError(err)
+        }
+
+        throw new Error(`${LOG_PREFIX} Invalid payload sent to upload API`)
+      }
+    )
+
+    formData.pipe(task)
+
+    task.on('error', handleError)
   })
 
 export default request
