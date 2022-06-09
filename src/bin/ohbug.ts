@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk'
-import prompts, { PromptObject } from 'prompts'
 import { resolve } from 'path'
 import { accessSync, readFileSync } from 'fs'
-import { DEFAULT_URL } from '../lib/constants'
-import uploadSourceMap, { UploadSourceMap } from '../lib/uploadSourceMap'
+import chalk from 'chalk'
+import type { PromptObject } from 'prompts'
+import prompts from 'prompts'
+import { DEFAULT_ENDPOINT } from '../lib/constants'
+import uploadSourceMap from '../lib/uploadSourceMap'
 
+type keys = 'path' | 'apiKey'| 'appVersion'| 'appType'| 'endpoint'
 async function switchCommand(command: string) {
   if (command === 'uploadSourceMap') {
-    const questions: PromptObject[] = [
+    const questions: PromptObject<keys>[] = [
       {
-        type: `text`,
-        name: `path`,
-        message: `Your source map file path`,
+        type: 'text',
+        name: 'path',
+        message: 'Your source map file path',
         validate(value) {
           if (!value) return false
 
@@ -22,7 +24,8 @@ async function switchCommand(command: string) {
           try {
             accessSync(path)
             isAccess = true
-          } catch {
+          }
+          catch {
             isAccess = false
           }
           return isAccess
@@ -33,43 +36,38 @@ async function switchCommand(command: string) {
         },
       },
       {
-        type: `text`,
-        name: `apiKey`,
-        message: `Your project API key (apiKey)`,
+        type: 'text',
+        name: 'apiKey',
+        message: 'Your project API key (apiKey)',
         validate(value) {
           if (!value) return false
           return true
         },
       },
       {
-        type: `text`,
-        name: `appVersion`,
-        message: `The version number of your app (appVersion)`,
+        type: 'text',
+        name: 'appVersion',
+        message: 'The version number of your app (appVersion)',
         validate(value) {
           if (!value) return false
           return true
         },
       },
       {
-        type: `text`,
-        name: `appType`,
-        message: `The type of your app (appType)`,
+        type: 'text',
+        name: 'appType',
+        message: 'The type of your app (appType)',
       },
       {
-        type: `text`,
-        name: `url`,
-        message: `The url of the upload server (url)`,
-        initial: DEFAULT_URL,
+        type: 'text',
+        name: 'endpoint',
+        message: 'The url of the upload server (endpoint)',
+        initial: DEFAULT_ENDPOINT,
       },
     ]
-    return prompts(questions, {
-      // @ts-ignore
-      onSubmit(_, __, answers: UploadSourceMap) {
-        if (Object.keys(answers).length === questions.length) {
-          uploadSourceMap(answers)
-        }
-      },
-    })
+    const answers = await prompts<keys>(questions)
+    if (Object.keys(answers).length === questions.length)
+      uploadSourceMap(answers)
   }
   return null
 }
@@ -80,14 +78,14 @@ async function prompt() {
   console.log(chalk.bold.green(`Ohbug CLI v${JSON.parse(pkg).version}`))
 
   const { command } = await prompts({
-    type: `select`,
-    name: `command`,
-    message: `Which command do you want to execute?`,
+    type: 'select',
+    name: 'command',
+    message: 'Which command do you want to execute?',
     choices: [
       {
-        title: `uploadSourceMap`,
-        description: `Upload the source map file to the server`,
-        value: `uploadSourceMap`,
+        title: 'uploadSourceMap',
+        description: 'Upload the source map file to the server',
+        value: 'uploadSourceMap',
       },
     ],
   })

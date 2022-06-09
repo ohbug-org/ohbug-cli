@@ -1,16 +1,17 @@
-import http, { IncomingMessage } from 'http'
-import { PathLike, createReadStream } from 'fs'
-import { parse as parseUrl } from 'url'
+import type { IncomingMessage } from 'http'
+import http from 'http'
+import type { PathLike } from 'fs'
+import { createReadStream } from 'fs'
 import FormData from 'form-data'
 import ora from 'ora'
 import chalk from 'chalk'
-import { TIMEOUT, LOG_PREFIX } from './constants'
+import { LOG_PREFIX, TIMEOUT } from './constants'
 
 export interface Request {
   /**
    * The url of the upload server
    */
-  url: string
+  endpoint: string
   /**
    * The path of the source map file (local)
    */
@@ -21,9 +22,9 @@ export interface Request {
   data?: any
 }
 
-const request = ({ url, file, data }: Request): Promise<IncomingMessage> =>
+const request = ({ endpoint, file, data }: Request): Promise<IncomingMessage> =>
   new Promise((resolve, reject) => {
-    if (!url) return reject(new Error(`${LOG_PREFIX} No url matches!`))
+    if (!endpoint) return reject(new Error(`${LOG_PREFIX} No endpoint matches!`))
     if (!file) return reject(new Error(`${LOG_PREFIX} No ".map" file matches!`))
 
     const spinner = ora(`${chalk.cyan('Upload:')} ${chalk.underline(file)}`).start()
@@ -36,7 +37,7 @@ const request = ({ url, file, data }: Request): Promise<IncomingMessage> =>
       })
     }
 
-    const parsedUrl = parseUrl(url)
+    const parsedUrl = new URL(endpoint)
 
     function handleSuccess(res: IncomingMessage) {
       spinner.succeed()
@@ -51,24 +52,22 @@ const request = ({ url, file, data }: Request): Promise<IncomingMessage> =>
       {
         method: 'POST',
         hostname: parsedUrl.hostname,
-        path: parsedUrl.path || '/',
+        path: parsedUrl.pathname || '/',
         port: parsedUrl.port,
         headers: formData.getHeaders(),
         timeout: TIMEOUT,
       },
       (res) => {
         if (res.statusCode) {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
+          if (res.statusCode >= 200 && res.statusCode < 300)
             return handleSuccess(res)
-          }
-          const err = new Error(
-            `${LOG_PREFIX} HTTP status ${res.statusCode} received from uploadSourceMap API`
-          )
+
+          const err = new Error(`${LOG_PREFIX} HTTP status ${res.statusCode} received from uploadSourceMap API`)
           return handleError(err)
         }
 
         throw new Error(`${LOG_PREFIX} Invalid payload sent to upload API`)
-      }
+      },
     )
 
     formData.pipe(task)

@@ -1,5 +1,6 @@
 {
   "name": "@ohbug/cli",
+  "type": "module",
   "version": "1.1.0",
   "description": "Command line utility to work with Ohbug",
   "keywords": [
@@ -8,6 +9,7 @@
     "source-maps",
     "cli"
   ],
+  "license": "Apache-2.0",
   "author": "chenyueban <jasonchan0527@gmail.com>",
   "homepage": "https://github.com/ohbug-org/ohbug-cli",
   "bugs": {
@@ -17,58 +19,70 @@
     "type": "git",
     "url": "https://github.com/ohbug-org/ohbug-cli"
   },
-  "license": "Apache-2.0",
   "engines": {
-    "node": ">=8"
+    "node": ">=14.0.0"
   },
-  "bin": {
-    "ohbug": "dist/bin/ohbug.js"
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "bin": {
+    "ohbug": "dist/ohbug.cjs"
+  },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc",
-    "dev": "tsc -w",
-    "test": "jest --config ./jest.config.js",
-    "codecov": "codecov",
-    "update:deps": "yarn upgrade-interactive --latest",
-    "release": "release-it"
+    "build": "unbuild",
+    "dev": "unbuild --stub",
+    "test": "vitest",
+    "update:deps": "pnpm update -i -r --latest",
+    "release": "npm run build && release-it",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "eslint . --fix",
+    "prepare": "husky install"
   },
   "dependencies": {
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.1",
     "form-data": "^4.0.0",
-    "glob": "^7.1.7",
-    "ora": "5.4.1",
+    "glob": "^8.0.3",
+    "ora": "6.1.0",
     "prompts": "^2.4.1"
   },
   "devDependencies": {
-    "@chenyueban/lint": "^1.1.0",
-    "@chenyueban/tsconfig": "^0.2.0",
-    "@release-it/conventional-changelog": "^3.3.0",
+    "@chenyueban/eslint-config": "^1.0.9",
+    "@chenyueban/tsconfig": "^2.1.0",
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "@release-it/conventional-changelog": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/glob": "^7.1.4",
-    "@types/jest": "^27.0.1",
     "@types/multer": "^1.4.7",
-    "@types/node": "^16.9.1",
+    "@types/node": "^17.0.41",
     "@types/prompts": "^2.0.14",
     "@types/rimraf": "^3.0.2",
-    "codecov": "^3.8.3",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
+    "eslint": "^8.17.0",
     "express": "^4.17.1",
-    "jest": "^27.1.1",
-    "multer": "^1.4.3",
-    "release-it": "^14.11.5",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.1",
+    "multer": "^1.4.5-lts.1",
+    "release-it": "^15.0.0",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.0.5",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.3",
+    "unbuild": "^0.7.4",
+    "vitest": "^0.14.1"
   },
   "config": {
     "commitizen": {

@@ -3,7 +3,7 @@ import { resolve } from 'path'
 import { promisify } from 'util'
 import glob from 'glob'
 import request from './request'
-import { DEFAULT_URL, LOG_PREFIX } from './constants'
+import { DEFAULT_ENDPOINT, LOG_PREFIX } from './constants'
 
 const stat = promisify(fs.stat)
 
@@ -29,7 +29,7 @@ export interface UploadSourceMapOptions {
   /**
    * The url of the upload server
    */
-  url?: string
+  endpoint?: string
 }
 export interface UploadSourceMap extends UploadSourceMapCommand, UploadSourceMapOptions {}
 
@@ -38,7 +38,7 @@ async function uploadSourceMap({
   apiKey,
   appVersion,
   appType,
-  url = DEFAULT_URL,
+  endpoint = DEFAULT_ENDPOINT,
 }: UploadSourceMap) {
   const stats = await stat(path)
   if (stats.isFile()) {
@@ -46,7 +46,7 @@ async function uploadSourceMap({
     const file = resolve(path)
     try {
       return await request({
-        url,
+        endpoint,
         file,
         data: {
           apiKey,
@@ -54,32 +54,33 @@ async function uploadSourceMap({
           appType,
         },
       })
-    } catch (error) {
+    }
+    catch (error) {
       throw new Error(`${LOG_PREFIX} Uploading file ${file} failed!\n${error}`)
     }
-  } else if (stats.isDirectory()) {
+  }
+  else if (stats.isDirectory()) {
     // Find all map files in the specified directory and upload them one by one.
-    const list = glob.sync(resolve(path, `./**/*.{js.map,}`))
+    const list = glob.sync(resolve(path, './**/*.{js.map,}'))
     if (list.length) {
       try {
-        return await Promise.all(
-          list.map((file) =>
-            request({
-              url,
-              file,
-              data: {
-                apiKey,
-                appVersion,
-                appType,
-              },
-            })
-          )
-        )
-      } catch (error) {
+        return await Promise.all(list.map(file =>
+          request({
+            endpoint,
+            file,
+            data: {
+              apiKey,
+              appVersion,
+              appType,
+            },
+          })))
+      }
+      catch (error) {
         throw new Error(`${LOG_PREFIX} Uploading file ${list.join(',')} failed!\n${error}
       `)
       }
-    } else {
+    }
+    else {
       throw new Error(`${LOG_PREFIX} No matching source map files!`)
     }
   }

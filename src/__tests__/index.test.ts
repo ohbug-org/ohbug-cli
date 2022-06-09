@@ -1,8 +1,8 @@
 import { readdirSync } from 'fs'
 import { resolve } from 'path'
-import { createTestServer, closeTestServer, url, uploads, clearUploads } from './helpers'
 import request from '../lib/request'
 import uploadSourceMap from '../lib/uploadSourceMap'
+import { clearUploads, closeTestServer, createTestServer, endpoint, uploads } from './helpers'
 
 const apiKey = 'YOUR_API_KEY'
 const appVersion = 'YOUR_APP_VERSION'
@@ -21,34 +21,30 @@ describe('ohbug-ci', () => {
     clearUploads()
   })
 
-  it('request: should works', async () => {
-    await request({ url, file: filePath })
+  it('request: should works', async() => {
+    await request({ endpoint, file: filePath })
     const files = readdirSync(uploads).length
     await expect(files).toBe(1)
   })
 
-  it('request: url is required', async () => {
-    await expect(
-      // @ts-ignore
-      request({ url: null })
-    ).rejects.toThrowError(/No url matches!/)
+  it('request: endpoint is required', async() => {
+    // @ts-expect-error test need
+    await expect(request({ endpoint: null })).rejects.toThrowError(/No endpoint matches!/)
   })
 
-  it('request: file is required', async () => {
-    await expect(
-      // @ts-ignore
-      request({ url, file: null })
-    ).rejects.toThrow(/No ".map" file matches!/)
+  it('request: file is required', async() => {
+    // @ts-expect-error test need
+    await expect(request({ endpoint, file: null })).rejects.toThrow(/No ".map" file matches!/)
   })
 
-  it('uploadSourceMap: should works with single file', async () => {
-    await uploadSourceMap({ path: filePath, apiKey, appVersion, url })
+  it('uploadSourceMap: should works with single file', async() => {
+    await uploadSourceMap({ path: filePath, apiKey, appVersion, endpoint })
     const files = readdirSync(uploads).length
     return expect(files).toBe(1)
   })
 
-  it('uploadSourceMap: should works with directory', async () => {
-    await uploadSourceMap({ path: dirPath, apiKey, appVersion, url })
+  it('uploadSourceMap: should works with directory', async() => {
+    await uploadSourceMap({ path: dirPath, apiKey, appVersion, endpoint })
     const files = readdirSync(uploads).length
     return expect(files).toBe(2)
   })

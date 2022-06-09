@@ -1,6 +1,0 @@
-{
-  "extends": "./node_modules/@chenyueban/lint/src/eslint.js",
-  "rules": {
-    "global-require": "off"
-  }
-}

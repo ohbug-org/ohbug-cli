@@ -1,13 +1,14 @@
 {
-  "extends": "./node_modules/@chenyueban/tsconfig/tsconfig.json",
+  "extends": "@chenyueban/tsconfig",
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "target": "ES2015",
-    "module": "CommonJS",
-    "noEmit": false,
-    "lib": ["ESNext"],
-    "types": ["node", "jest"]
+    "outDir": "dist",
+    "types": ["vitest/globals"]
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules/",
+    "dist/"
+  ]
 }
