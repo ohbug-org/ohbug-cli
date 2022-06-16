@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { resolve } from 'path'
 import { promisify } from 'util'
-import glob from 'glob'
+import fg from 'fast-glob'
 import request from './request'
 import { DEFAULT_ENDPOINT, LOG_PREFIX } from './constants'
 
@@ -61,7 +61,7 @@ async function uploadSourceMap({
   }
   else if (stats.isDirectory()) {
     // Find all map files in the specified directory and upload them one by one.
-    const list = glob.sync(resolve(path, './**/*.{js.map,}'))
+    const list = fg.sync(resolve(path, './**/*.{js.map,}'))
     if (list.length) {
       try {
         return await Promise.all(list.map(file =>
