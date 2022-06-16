@@ -1,5 +1,7 @@
 
 
+## [1.1.2](https://github.com/ohbug-org/ohbug-cli/compare/1.1.1...1.1.2) (2022-06-16)
+
 ## [1.1.1](https://github.com/ohbug-org/ohbug-cli/compare/1.1.0...1.1.1) (2022-06-09)
 
 # 1.1.0 (2021-09-13)
