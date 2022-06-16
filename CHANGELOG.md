@@ -1,5 +1,12 @@
 
 
+## [1.1.3](https://github.com/ohbug-org/ohbug-cli/compare/1.1.2...1.1.3) (2022-06-16)
+
+
+### Bug Fixes
+
+* fixed commonjs error ([ca0ae9e](https://github.com/ohbug-org/ohbug-cli/commit/ca0ae9e144f7a10997090e83af0a65589a6bd131))
+
 ## [1.1.2](https://github.com/ohbug-org/ohbug-cli/compare/1.1.1...1.1.2) (2022-06-16)
 
 ## [1.1.1](https://github.com/ohbug-org/ohbug-cli/compare/1.1.0...1.1.1) (2022-06-09)
